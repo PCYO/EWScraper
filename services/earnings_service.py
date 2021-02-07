@@ -21,7 +21,7 @@ else:
         'client_x509_cert_url': os.getenv('fs_client_x509_cert_url', None)
     }
 
-    fs_config['private_key'].replace('\\n', '\n')
+    fs_config['private_key'] = fs_config['private_key'].replace('\\n', '\n')
 
     for k, v in fs_config.items():
         if not v:
