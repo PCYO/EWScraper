@@ -30,6 +30,8 @@ try:
     cred = credentials.Certificate(fs_config)
 except:
     logging.error('Firebase init error, check config')
+    for k, v in fs_config.items():
+        logging.error('%s => %s', k, v)
     sys.exit(1)
 
 firebase_admin.initialize_app(cred)
