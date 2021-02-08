@@ -11,12 +11,12 @@ class EarningsReply:
         color = dict()
 
         try:
-            color['acteps'] = red if float(earnings['actual'][1:]) > float(earnings['actestimate'][1:]) else green
+            color['acteps'] = red if float(earnings['actual'][1:]) < float(earnings['actestimate'][1:]) else green
         except:
             color['acteps'] = black
 
         try:
-            color['actrev'] = red if float(earnings['revactual'][1:-1]) > earnings['actrevest'][1:-1] else green
+            color['actrev'] = red if float(earnings['revactual'][1:-1]) < float(earnings['actrevest'][1:-1]) else green
         except:
             color['actrev'] = black
 
@@ -49,17 +49,21 @@ class EarningsReply:
                 "contents": [
                     {
                         "type": "text",
-                        "text": f"#{earnings['popularity']} {earnings['ticker']}",
+                        "text": f"#{earnings.get('popularity', '00')} {earnings.get('ticker', '???')}",
                         "size": "xl",
                         "weight": "bold"
                     },
                     {
                         "type": "text",
-                        "text": earnings['company']
+                        "text": earnings.get('company', '<unknown company>')
                     },
                     {
                         "type": "text",
-                        "text": earnings['date']
+                        "text": earnings.get('date', '<unknown date>')
+                    },
+                    {
+                        "type": "text",
+                        "text": earnings.get('bmoamc', '<all>')
                     }
                 ]
             },
@@ -95,11 +99,11 @@ class EarningsReply:
                             },
                             {
                                 "type": "text",
-                                "text": earnings['actestimate']
+                                "text": earnings.get('actestimate', '..')
                             },
                             {
                                 "type": "text",
-                                "text": earnings['actrevest']
+                                "text": earnings.get('actrevest', '..')
                             }
                         ]
                     },
@@ -113,12 +117,12 @@ class EarningsReply:
                             },
                             {
                                 "type": "text",
-                                "text": earnings['actual'],
+                                "text": earnings.get('actual', '..'),
                                 "color": color['acteps']
                             },
                             {
                                 "type": "text",
-                                "text": earnings['revactual'],
+                                "text": earnings.get('revactual', '..'),
                                 "color": color['actrev']
                             }
                         ]
@@ -133,12 +137,12 @@ class EarningsReply:
                             },
                             {
                                 "type": "text",
-                                "text": earnings['epsgrowthfull'],
+                                "text": earnings.get('epsgrowthfull', '..'),
                                 "color": color['growtheps']
                             },
                             {
                                 "type": "text",
-                                "text": earnings['revgrowthfull'],
+                                "text": earnings.get('revgrowthfull', '..'),
                                 "color": color['growthrev']
                             }
                         ]
@@ -153,12 +157,12 @@ class EarningsReply:
                             },
                             {
                                 "type": "text",
-                                "text": earnings['epssurpfull'],
+                                "text": earnings.get('epssurpfull', '..'),
                                 "color": color['surpeps']
                             },
                             {
                                 "type": "text",
-                                "text": earnings['revsurpfull'],
+                                "text": earnings.get('revsurpfull', '..'),
                                 "color": color['surprev']
                             }
                         ]
