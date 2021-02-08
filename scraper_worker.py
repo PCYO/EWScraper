@@ -3,7 +3,7 @@ from services.earnings_service import set_earnings
 import logging
 
 if __name__ == "__main__":
-    logging.basicConfig(level=logging.INFO)
+    logging.basicConfig(level=logging.DEBUG)
     scraper = earnings_whispers_scraper.EarningsWhispersScraper()
     earnings_list = scraper.scrape()
     logging.info('Scrap %d earnings', len(earnings_list))
