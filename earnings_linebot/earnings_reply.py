@@ -3,6 +3,28 @@ from linebot.models import FlexSendMessage, TextSendMessage
 
 
 class EarningsReply:
+    def _eps2float(self, eps):
+        try:
+            if eps[0] == '$':
+                return float(eps[1:])
+            elif eps[0] == '(' and eps[1] == '$' and eps[-1] == ')':
+                return -float(eps[2:-1])
+            else:
+                return None
+        except:
+            return None
+
+    def _rev2float(self, rev):
+        try:
+            if rev[0] == '$':
+                return float(rev[1:-1])
+            elif rev[0] == '(' and rev[1] == '$' and rev[-1] == ')':
+                return -float(rev[2:-2])
+            else:
+                return None
+        except:
+            return None
+
     def _get_bubble_container(self, earnings):
         green = '#599F59'
         red = '#BD5959'
@@ -11,12 +33,16 @@ class EarningsReply:
         color = dict()
 
         try:
-            color['acteps'] = red if float(earnings['actual'][1:]) < float(earnings['actestimate'][1:]) else green
+            estimate = self._eps2float(earnings['actestimate'])
+            actual = self._eps2float(earnings['actual'])
+            color['acteps'] = red if actual < estimate else green
         except:
             color['acteps'] = black
 
         try:
-            color['actrev'] = red if float(earnings['revactual'][1:-1]) < float(earnings['actrevest'][1:-1]) else green
+            estimate = self._eps2float(earnings['actrevest'])
+            actual = self._eps2float(earnings['revactual'])
+            color['actrev'] = red if estimate < actual else green
         except:
             color['actrev'] = black
 
