@@ -40,8 +40,8 @@ class EarningsReply:
             color['acteps'] = black
 
         try:
-            estimate = self._eps2float(earnings['actrevest'])
-            actual = self._eps2float(earnings['revactual'])
+            estimate = self._rev2float(earnings['actrevest'])
+            actual = self._rev2float(earnings['revactual'])
             color['actrev'] = red if estimate < actual else green
         except:
             color['actrev'] = black
