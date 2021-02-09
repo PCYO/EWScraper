@@ -12,8 +12,7 @@ class EarningsWhispersScraper:
 
     def _parse_earnings(self, idx, date, earnings_tag):
         try:
-            earnings = {tag: earnings_tag.find(class_=tag).string.replace('(', '').replace(')', '')
-                        for tag in self.tags}
+            earnings = {tag: earnings_tag.find(class_=tag).string for tag in self.tags}
             earnings['date'] = date
             earnings['popularity'] = idx
             if 'bmo' in earnings_tag['class']:
