@@ -47,7 +47,7 @@ class EarningsReply:
             color['actrev'] = black
 
         try:
-            color['growtheps'] = red if earnings['revactual'][0] == '-' else green
+            color['growtheps'] = red if earnings['epsgrowthfull'][0] == '-' else green
         except:
             color['growtheps'] = black
 
