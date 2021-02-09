@@ -42,7 +42,7 @@ class EarningsReply:
         try:
             estimate = self._rev2float(earnings['actrevest'])
             actual = self._rev2float(earnings['revactual'])
-            color['actrev'] = red if estimate < actual else green
+            color['actrev'] = red if actual < estimate else green
         except:
             color['actrev'] = black
 
