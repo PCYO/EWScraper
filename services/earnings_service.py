@@ -45,8 +45,14 @@ def get_earnings_by_ticker(ticker):
     return [doc.to_dict() for doc in docs]
 
 
-def get_earnings_by_date(date):
-    docs = db.collection('earnings').where('date', '==', date).stream()
+def get_earnings_by_date(date, start_at=None, limit=None):
+    query = db.collection('earnings').where('date', '==', date)
+    if start_at:
+        query = query.where('popularity', '>=', start_at)
+    if limit:
+        query = query.limit(limit)
+    query = query.order_by('popularity')
+    docs = query.stream()
     return [doc.to_dict() for doc in docs]
 
 
@@ -71,7 +77,7 @@ def set_earnings(earnings):
 
 
 if __name__ == "__main__":
-    logging.basicConfig(level=logging.INFO)
+    logging.basicConfig(level=logging.DEBUG)
     earnings = {
         'ticker': 'TESTLA',
         'company': 'TESTLALALA',
@@ -88,6 +94,24 @@ if __name__ == "__main__":
     }
     # set_earnings(earnings)
 
-    es = get_earnings_by_date('20210205')
+    '''
+    es = get_earnings_by_date('20210209', start_at=0, limit=2)
+    i = 0
     for e in es:
-        print(e)
+        print(i, e['ticker'], e['popularity'])
+        i += 1
+    print('Total', len(es))
+    '''
+
+    query = db.collection('earnings')
+    docs = query.stream()
+    for doc in docs:
+        for k, v in doc.to_dict().items():
+            if not v:
+                if k == 'popularity':
+                    # note, popularity is an int type, so 'if not 0' is true
+                    print('doc', doc.id, 'key', k, 'is none, update to 0')
+                    db.collection('earnings').document(doc.id).update({k: 0})
+                else:
+                    print('doc', doc.id, 'key', k, 'is none, update to ..')
+                    db.collection('earnings').document(doc.id).update({k: '..'})
