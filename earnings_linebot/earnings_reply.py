@@ -31,7 +31,6 @@ class EarningsReply:
         black = "#323232"
 
         color = dict()
-
         try:
             estimate = self._eps2float(earnings['actestimate'])
             actual = self._eps2float(earnings['actual'])
@@ -213,19 +212,28 @@ class EarningsReply:
         else:
             return TextSendMessage(text='Ticker ' + ticker + ' not found')
 
-    def _get_reply_by_date(self, date):
-        earnings_list = get_earnings_by_date(date)[:60]
-        earnings_list.sort(key=lambda earnings: earnings['popularity'])
-        groups = [earnings_list[i:i+12] for i in range(0, len(earnings_list), 12)]
+    def _get_reply_by_date(self, date, start_at=None, limit=None):
+        earnings_list = get_earnings_by_date(date, start_at=start_at, limit=limit)
 
-        if groups:
-            return [FlexSendMessage(alt_text='ticker carousel', contents=self._get_carousel_container(group))
-                    for group in groups]
-        else:
+        if not earnings_list:
             return TextSendMessage(text='Date ' + date + ' not found')
 
-    def get_reply_message(self, type, ticker='', date=''):
+        groups = [earnings_list[i:i+12] for i in range(0, len(earnings_list), 12)]
+        reply = [FlexSendMessage(alt_text='ticker carousel', contents=self._get_carousel_container(group))
+                 for group in groups]
+        return reply
+
+    def get_reply_message(self, type, ticker='', date='', start_at=None, limit=None):
+        if start_at and not isinstance(start_at, int):
+            raise TypeError('args: start_at must be an int')
+
+        if limit and not isinstance(limit, int):
+            raise TypeError('args: limit must be an int')
+
+        if not limit or limit > 60:
+            limit = 60
+
         if type == 'ticker':
             return self._get_reply_by_ticker(ticker)
         else:
-            return self._get_reply_by_date(date)
+            return self._get_reply_by_date(date, start_at=start_at, limit=limit)

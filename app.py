@@ -69,18 +69,43 @@ def handle_message(event):
                 event.reply_token,
                 messages=EarningsBot().get_reply_instance('earnings').get_reply_message('ticker', ticker=ticker))
     elif text[0].upper() == 'D':
-        date = text[1:].lstrip()
-        if len(date) == 1:
-            try:
+        query = text[1:].split(',')
+        date = query[0].lstrip()
+        start_at = query[1] if len(query) > 1 else None
+        limit = query[2] if len(query) > 2 else None
+
+        if len(date) < 8:
+            if date.isdigit():
                 days = int(date)
-            except:
-                days = 0
-            date = (datetime.now(ZoneInfo("America/New_York")) - timedelta(days=days)).strftime(r'%Y%m%d')
+                date = (datetime.now(ZoneInfo("America/New_York")) - timedelta(days=days)).strftime(r'%Y%m%d')
+            else:
+                line_bot_api.reply_message(event.reply_token, TextSendMessage(text='Invalid query: days'))
+                return
+        elif len(date) != 8:
+            line_bot_api.reply_message(event.reply_token, TextSendMessage(text='Invalid query: date'))
+            return
+
+        if start_at:
+            if start_at.isdigit():
+                start_at = int(start_at)
+            else:
+                line_bot_api.reply_message(event.reply_token, TextSendMessage(text='Invalid query: start_at'))
+                return
+
+        if limit:
+            if limit.isdigit():
+                limit = int(limit)
+            else:
+                line_bot_api.reply_message(event.reply_token, TextSendMessage(text='Invalid query: limit'))
+                return
 
         if date:
             line_bot_api.reply_message(
                 event.reply_token,
-                messages=EarningsBot().get_reply_instance('earnings').get_reply_message('date', date=date))
+                messages=EarningsBot().get_reply_instance('earnings').get_reply_message('date',
+                                                                                        date=date,
+                                                                                        start_at=start_at,
+                                                                                        limit=limit))
 
 
 if __name__ == "__main__":
