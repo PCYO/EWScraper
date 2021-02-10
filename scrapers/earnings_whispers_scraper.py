@@ -11,19 +11,23 @@ class EarningsWhispersScraper:
                      'revactual', 'revsurpfull', 'revgrowthfull', 'epssurpfull', 'epsgrowthfull']
 
     def _parse_earnings(self, idx, date, earnings_tag):
-        try:
-            earnings = {tag: earnings_tag.find(class_=tag).string for tag in self.tags}
-            earnings['date'] = date
-            earnings['popularity'] = idx
-            if 'bmo' in earnings_tag['class']:
-                earnings['bmoamc'] = 'bmo'
-            elif 'amc' in earnings_tag['class']:
-                earnings['bmoamc'] = 'amc'
+        earnings = dict()
+        for tag_name in self.tags:
+            tag = earnings_tag.find(class_=tag_name)
+            if tag:
+                earnings[tag_name] = tag.string
             else:
-                earnings['bmoamc'] = 'all'
-            return earnings
-        except:
-            return None
+                earnings[tag_name] = '..'
+
+        earnings['date'] = date
+        earnings['popularity'] = idx
+        if 'bmo' in earnings_tag['class']:
+            earnings['bmoamc'] = 'bmo'
+        elif 'amc' in earnings_tag['class']:
+            earnings['bmoamc'] = 'amc'
+        else:
+            earnings['bmoamc'] = 'all'
+        return earnings
 
     def scrape(self):
         response = requests.get(self.url)
