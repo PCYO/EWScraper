@@ -6,9 +6,8 @@ if __name__ == "__main__":
     logging.basicConfig(level=logging.DEBUG)
     scraper = earnings_whispers_scraper.EarningsWhispersScraper()
     earnings_list = scraper.scrape()
-    logging.info('Scrap %d earnings', len(earnings_list))
 
     for earnings in earnings_list:
         set_earnings(earnings)
 
-    logging.info('Scraper exit')
+    logging.info('Scrap %d earnings, exit', len(earnings_list))
