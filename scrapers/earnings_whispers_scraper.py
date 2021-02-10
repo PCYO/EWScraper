@@ -15,7 +15,7 @@ class EarningsWhispersScraper:
         for tag_name in self.tags:
             tag = earnings_tag.find(class_=tag_name)
             if tag:
-                earnings[tag_name] = tag.string
+                earnings[tag_name] = tag.string if tag.string else '?'
             else:
                 earnings[tag_name] = '..'
 
@@ -40,8 +40,7 @@ class EarningsWhispersScraper:
 
         calendar_tag = soup.find(id='epscalendar')
         earnings_tags = calendar_tag.find_all('li')[1:]
-        earnings_list = [earnings for idx, tag in enumerate(earnings_tags)
-                         if (earnings := self._parse_earnings(idx, date_str, tag))]
+        earnings_list = [self._parse_earnings(idx, date_str, tag) for idx, tag in enumerate(earnings_tags)]
 
         for earnings in earnings_list:
             earnings['date'] = date_str
