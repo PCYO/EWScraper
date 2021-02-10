@@ -27,6 +27,15 @@ class EarningsWhispersScraper:
             earnings['bmoamc'] = 'amc'
         else:
             earnings['bmoamc'] = 'all'
+
+        guidance_tag = earnings_tag.find(class_='guidance')
+        if guidance_tag:
+            if 'neg' in guidance_tag.attrs['class']:
+                earnings['guidance'] = 'neg'
+            elif 'neut' in guidance_tag.attrs['class']:
+                earnings['guidance'] = 'neut'
+            elif 'pos' in guidance_tag.attrs['class']:
+                earnings['guidance'] = 'pos'
         return earnings
 
     def scrape(self):
