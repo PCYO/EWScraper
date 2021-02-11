@@ -29,6 +29,7 @@ class EarningsReply:
         green = '#599F59'
         red = '#BD5959'
         black = "#323232"
+        yellow = '#CD9F59'
 
         color = dict()
         try:
@@ -65,6 +66,19 @@ class EarningsReply:
         except:
             color['surprev'] = black
 
+        header_text = f"#{earnings.get('popularity', '00')} {earnings.get('ticker', '???')}"
+        guidance = earnings.get('guidance')
+        if guidance:
+            if guidance == 'neg':
+                header_text += "↓"
+                color['header'] = red
+            elif guidance == 'neut':
+                header_text += "←→"
+                color['header'] = yellow
+            elif guidance == 'pos':
+                header_text += "↑"
+                color['header'] = green
+
         return {
             "type": "bubble",
             "size": "kilo",
@@ -73,10 +87,17 @@ class EarningsReply:
                 "layout": "vertical",
                 "contents": [
                     {
-                        "type": "text",
-                        "text": f"#{earnings.get('popularity', '00')} {earnings.get('ticker', '???')}",
-                        "size": "xl",
-                        "weight": "bold"
+                        "type": "box",
+                        "layout": "vertical",
+                        "contents": [
+                            {
+                                "type": "text",
+                                "text": header_text,
+                                "size": "xl",
+                                "weight": "bold",
+                            }
+                        ],
+                        "backgroundColor": color['header'] if 'header' in color else None
                     },
                     {
                         "type": "text",
@@ -207,7 +228,7 @@ class EarningsReply:
         earnings_list = get_earnings_by_ticker(ticker)[:12]
         if earnings_list:
             return FlexSendMessage(
-                alt_text='ticker carousel',
+                alt_text='earnings carousel',
                 contents=self._get_carousel_container(earnings_list))
         else:
             return TextSendMessage(text='Ticker ' + ticker + ' not found')
@@ -219,7 +240,7 @@ class EarningsReply:
             return TextSendMessage(text='Date ' + date + ' not found')
 
         groups = [earnings_list[i:i+12] for i in range(0, len(earnings_list), 12)]
-        reply = [FlexSendMessage(alt_text='ticker carousel', contents=self._get_carousel_container(group))
+        reply = [FlexSendMessage(alt_text='earnings group message', contents=self._get_carousel_container(group))
                  for group in groups]
         return reply
 
