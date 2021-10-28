@@ -63,40 +63,45 @@ def handle_message(event):
     text = event.message.text
 
     if text[0].upper() == 'T':
-        ticker = text[1:].lstrip().upper()
+        ticker = text[1:].strip().upper()
         if ticker:
             line_bot_api.reply_message(
                 event.reply_token,
                 messages=EarningsBot().get_reply_instance('earnings').get_reply_message('ticker', ticker=ticker))
     elif text[0].upper() == 'D':
         query = text[1:].split(',')
-        date = query[0].lstrip()
-        start_at = query[1] if len(query) > 1 else None
-        limit = query[2] if len(query) > 2 else None
+        date = query[0].strip()
+        start_at = query[1].strip() if len(query) > 1 else None
+        limit = query[2].strip() if len(query) > 2 else None
 
         if len(date) < 8:
             if date.isdigit():
                 days = int(date)
-                date = (datetime.now(ZoneInfo("America/New_York")) - timedelta(days=days)).strftime(r'%Y%m%d')
+                date = (datetime.now(ZoneInfo("America/New_York")) -
+                        timedelta(days=days)).strftime(r'%Y%m%d')
             else:
-                line_bot_api.reply_message(event.reply_token, TextSendMessage(text='Invalid query: days'))
+                line_bot_api.reply_message(
+                    event.reply_token, TextSendMessage(text='Invalid query: days'))
                 return
         elif len(date) != 8:
-            line_bot_api.reply_message(event.reply_token, TextSendMessage(text='Invalid query: date'))
+            line_bot_api.reply_message(
+                event.reply_token, TextSendMessage(text='Invalid query: date'))
             return
 
         if start_at:
             if start_at.isdigit():
                 start_at = int(start_at)
             else:
-                line_bot_api.reply_message(event.reply_token, TextSendMessage(text='Invalid query: start_at'))
+                line_bot_api.reply_message(
+                    event.reply_token, TextSendMessage(text='Invalid query: start_at'))
                 return
 
         if limit:
             if limit.isdigit():
                 limit = int(limit)
             else:
-                line_bot_api.reply_message(event.reply_token, TextSendMessage(text='Invalid query: limit'))
+                line_bot_api.reply_message(
+                    event.reply_token, TextSendMessage(text='Invalid query: limit'))
                 return
 
         if date:
@@ -106,6 +111,17 @@ def handle_message(event):
                                                                                         date=date,
                                                                                         start_at=start_at,
                                                                                         limit=limit))
+    else:
+        help_text = "指定一天           D20210102\n" \
+                    "當天               D0\n" \
+                    "昨天               D1\n" \
+                    "第3筆開始          D0,3\n" \
+                    "限制10筆           D0,3,10\n" \
+                    "指定代號(eg,AMD)   Tamd\n" \
+                    "預設一次60筆\n"\
+                    "前後可空白，T跟D及代號大小寫都可，逗號要小寫\n"
+        line_bot_api.reply_message(
+            event.reply_token, [TextSendMessage(text='Invalid query\n'), TextSendMessage(text=help_text)])
 
 
 if __name__ == "__main__":
